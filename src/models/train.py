@@ -27,6 +27,7 @@ TARGET = "sale_price"
 
 EXCLUDE_COLS = [
     "sale_price", "log_sale_price", "price_per_sqft", "price_vs_city_median",
+    "cluster_avg_price", "cluster_median_price", "cluster_price_std",
     "city", "property_type", "age_bucket",
 ]
 

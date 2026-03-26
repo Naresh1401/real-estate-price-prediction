@@ -98,16 +98,23 @@ class InvestmentResult(BaseModel):
 
 def _property_to_df(prop: PropertyInput) -> pd.DataFrame:
     row = prop.model_dump()
-    row["sale_price"] = 0  # placeholder for feature engineering
+    row["sale_price"] = 0  # placeholder — excluded from model features via EXCLUDE_COLS
     return pd.DataFrame([row])
 
 
 def _predict_price(prop: PropertyInput) -> float:
     _load_model()
+    _load_data()
     df = _property_to_df(prop)
-    df = engineer_features(df)
 
-    X = df[_feature_cols].replace([np.inf, -np.inf], np.nan).fillna(0)
+    # Append to training data for accurate geospatial clustering & city-relative features
+    full_df = pd.concat([_raw_data, df], ignore_index=True)
+    full_df = engineer_features(full_df)
+
+    # Extract only the new property (last row) with engineered features
+    df_engineered = full_df.iloc[[-1]]
+
+    X = df_engineered[_feature_cols].replace([np.inf, -np.inf], np.nan).fillna(0)
 
     # Use scaler only for linear models
     linear_models = {"LinearRegression", "Ridge", "Lasso", "ElasticNet"}
