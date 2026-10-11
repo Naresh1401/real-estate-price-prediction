@@ -39,7 +39,7 @@ def get_feature_columns(df: pd.DataFrame) -> list:
 def compute_metrics(y_true, y_pred) -> dict:
     mae = mean_absolute_error(y_true, y_pred)
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-    mape = np.mean(np.abs((y_true - y_pred) / y_true.clip(lower=1))) * 100
+    mape = np.mean(np.abs((y_true - y_pred) / np.clip(y_true, 1, None))) * 100
     r2 = r2_score(y_true, y_pred)
     return {"MAE": round(mae, 2), "RMSE": round(rmse, 2), "MAPE": round(mape, 2), "R2": round(r2, 4)}
 
